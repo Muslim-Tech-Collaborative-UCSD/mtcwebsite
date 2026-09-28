@@ -135,7 +135,7 @@ export function GrainyGradientBackground({
   grain = 0.9,
   grainScale = 1.0,
   resolution = 8,
-  fpsCap,
+  fpsCap = 30,
   opacity = 0.8,
   blur = 120,
   className
@@ -312,14 +312,35 @@ export function GrainyGradientBackground({
       raf = requestAnimationFrame(renderFrame);
     }
 
+    const reducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+      } else if (!reducedMotion) {
+        last = performance.now();
+        raf = requestAnimationFrame(renderFrame);
+      }
+    }
+
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas.parentElement || document.body);
-    raf = requestAnimationFrame(renderFrame);
+
+    if (reducedMotion) {
+      acc = 1; // force the fpsCap check below to pass so this one frame actually draws
+      renderFrame(performance.now());
+      cancelAnimationFrame(raf);
+    } else {
+      raf = requestAnimationFrame(renderFrame);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
 
     return () => {
       mounted = false;
       ro.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       cancelAnimationFrame(raf);
     };
   }, [amplitude, scale, speed, grain, grainScale, resolution, fpsCap, paletteLUT, noise, blur]);
