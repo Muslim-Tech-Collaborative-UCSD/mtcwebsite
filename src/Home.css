@@ -36,6 +36,7 @@
 }
 
 .logo-container {
+  position: relative;
   display: flex;
   justify-content: center;
 }
@@ -211,6 +212,23 @@
   padding: 7rem 0;
 }
 
+.video-showcase {
+  height: clamp(320px, 34vw, 480px);
+  margin: 3rem 0 0;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--primary-dark);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.video-showcase-clip {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -231,7 +249,7 @@
 
 .event-image {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
 }
 
@@ -329,6 +347,11 @@ section h2 {
   .projects-grid,
   .events-grid {
     grid-template-columns: 1fr;
+  }
+
+  .video-showcase {
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .join-card {

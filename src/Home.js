@@ -3,14 +3,15 @@ import React, { useEffect, useRef } from 'react';
 import './Home.css';
 import mtcLogo from './images/mtc-logo.png';
 import image1 from './images/image3.JPG';
-import image2 from './images/image1.jpeg';
+import image2 from './images/image1.jpg';
 import image3 from './images/image2.JPG';
-import eventFaisal from './images/event-faisal-mushtaq.png';
-import eventPanel from './images/event-speaker-panel.png';
-import eventGameNight from './images/event-game-night.png';
-import eventBeyondPhysicalBoundaries from './images/event-beyond-physical-boundaries.png';
-import eventDarkAi from './images/event-dark-ai.png';
-import eventJeopardy from './images/event-jeopardy.png';
+import eventFaisal from './images/event-faisal-mushtaq.jpg';
+import eventPanel from './images/event-speaker-panel.jpg';
+import eventGameNight from './images/event-game-night.jpg';
+import eventBeyondPhysicalBoundaries from './images/event-beyond-physical-boundaries.jpg';
+import eventDarkAi from './images/event-dark-ai.jpg';
+import eventJeopardy from './images/event-jeopardy.jpg';
+import highlightsReel from './videos/highlights-merged.mp4';
 
 const PAST_EVENTS = [
   {
@@ -107,7 +108,7 @@ const ProjectCard = ({ project }) => {
   return (
     <div className="project-card" onClick={handleClick} style={{ cursor: project.link ? 'pointer' : 'default' }}>
       <div className="project-image">
-        <img src={project.image} alt={project.title} />
+        <img src={project.image} alt={project.title} loading="lazy" decoding="async" />
       </div>
       <div className="project-content">
         <h3>{project.title}</h3>
@@ -123,10 +124,50 @@ const ProjectCard = ({ project }) => {
   );
 };
 
+const VideoShowcase = ({ src }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const reducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="video-showcase">
+      <video
+        ref={videoRef}
+        className="video-showcase-clip"
+        src={src}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
+    </div>
+  );
+};
+
 const EventCard = ({ event }) => (
   <div className="event-card">
     <div className="event-image">
-      <img src={event.image} alt={event.title} />
+      <img src={event.image} alt={event.title} loading="lazy" decoding="async" />
     </div>
   </div>
 );
@@ -149,7 +190,7 @@ const Hero = () => (
 
 const JoinSection = () => {
   const handleJoinClick = () => {
-    window.open('https://discord.gg/CJYPHGb8nS', '_blank', 'noopener noreferrer');
+    window.open('https://linktr.ee/mtcatucsd', '_blank', 'noopener noreferrer');
   };
 
   return (
@@ -160,7 +201,7 @@ const JoinSection = () => {
             <h2>Join MTC</h2>
             <p>Get involved with projects, workshops, internship opportunities, and more!</p>
             <button className="join-button" onClick={handleJoinClick}>
-              Join Our Discord
+              Our Linktree
             </button>
           </div>
         </Reveal>
@@ -191,6 +232,9 @@ function Home() {
         <div className="container">
           <Reveal>
             <h2>Past Events</h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <VideoShowcase src={highlightsReel} />
           </Reveal>
           <div className="events-grid">
             {PAST_EVENTS.map((event, index) => (
